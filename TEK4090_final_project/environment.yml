@@ -1,0 +1,13 @@
+name: cartPole-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - matplotlib
+  - numba
+  - control
+  - scikit-fuzzy
+  - pybullet
+  - slycot

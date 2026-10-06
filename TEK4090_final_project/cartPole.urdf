@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<robot name="cartpole">
+
+  <!-- Dummy world link (link index -1 in PyBullet) -->
+  <link name="world"/>
+
+  <!-- Cart (base) sliding along X -->
+  <link name="cart">
+    <inertial>
+      <!-- Inertia of a 0.3 x 0.2 x 0.1 m box, mass 0.5 kg, about its center -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <!-- Box inertia:
+           Ixx = (1/12)*m*(b^2 + c^2) = 0.0020833
+           Iyy = (1/12)*m*(a^2 + c^2) = 0.0041667
+           Izz = (1/12)*m*(a^2 + b^2) = 0.0054167
+           with a=0.3 (x), b=0.2 (y), c=0.1 (z) -->
+      <inertia ixx="0.0020833" iyy="0.0041667" izz="0.0054167"
+               ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- Simple cart body -->
+        <box size="0.3 0.2 0.1"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.3 0.2 0.1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Pole (pendulum rod) -->
+  <link name="pole">
+    <!-- Uniform solid cylinder, length 1 m, radius 0.02 m -->
+    <!-- COM at middle of rod: (0, 0, -0.5) -->
+    <inertial>
+      <origin xyz="0 0 -0.5" rpy="0 0 0"/>
+      <!-- Round mass ~0.5 kg (close to your original 0.514 kg) -->
+      <mass value="0.5"/>
+      <!-- Solid cylinder about its COM, axis along z:
+           Ixx = Iyy = (1/12)*m*(3r^2 + L^2)
+                    = ~0.0417167
+           Izz = (1/2)*m*r^2 = 0.0001
+           with m = 0.5, L = 1.0, r = 0.02 -->
+      <inertia ixx="0.0417167" iyy="0.0417167" izz="0.0001"
+               ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+
+    <visual>
+      <!-- Top of rod at the joint, extending downward along -Z -->
+      <origin xyz="0 0 -0.5" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="1.0" radius="0.02"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.3 0.8 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 -0.5" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="1.0" radius="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Prismatic joint: world -> cart (slides along X) -->
+  <joint name="world_to_cart" type="prismatic">
+    <parent link="world"/>
+    <child link="cart"/>
+
+    <!-- Cart position when joint value = 0 -->
+    <origin xyz="0 0 1.2" rpy="0 0 0"/>
+
+    <!-- Slide along X axis -->
+    <axis xyz="1 0 0"/>
+
+    <!-- Limits: +/- 2 m range, reasonable dynamics -->
+    <limit lower="-2.0" upper="2.0" effort="1000" velocity="40"/>
+  </joint>
+
+  <!-- Revolute (continuous) joint: cart -> pole, rotates in x–z plane about Y -->
+  <joint name="hinge" type="continuous">
+    <parent link="cart"/>
+    <child link="pole"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+</robot>
