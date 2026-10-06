@@ -3,12 +3,12 @@
 The structure of the project directory: 
 ```text
 TEK4090_final_project
-├── cartPole.urdf
-├── environment.yml
 ├── Fuzzy.py
 ├── HINF.py
 ├── LQR.py
 ├── MPC.py
+├── cartPole.urdf
+├── environment.yml
 ├── pendulumSim.py
 ├── plotter.py
 └── test.py
